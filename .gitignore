@@ -1,13 +1,4 @@
 node_modules/
-.vscode
-dist
-.DS_Store
-npm-debug.log
-yarn-error.log
-coverage
-.idea
-*.log
-*.tsbuildinfo
-*.env
-*.local
-.tan-stack
+dist/
+.env
+!client/
