@@ -8,7 +8,6 @@ const socket = io("http://localhost:4000", {
 
 export function useLiveSync() {
   const [text, setText] = useState("");
-  const [title, setTitle] = useState("");
   const [status, setStatus] = useState<"waiting" | "saving" | "saved" | "error">("saved");
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const unsavedRef = useRef<string | null>(null);
@@ -65,7 +64,6 @@ export function useLiveSync() {
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newText = e.target.value;
-    setTitle(newTitle);
     setText(newText);
     setStatus("waiting");
 
@@ -74,16 +72,6 @@ export function useLiveSync() {
       saveToServer(newText);
     }, 2000);
   };
-  const handleTitleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newText = e.target.value;
-    setTitle(newText);
-    setStatus("waiting");
 
-    if (saveTimer.current) clearTimeout(saveTimer.current);
-    saveTimer.current = setTimeout(() => {
-      saveToServer(newText);
-    }, 2000);
-  };
-
-  return { title, text, handleTitleChange, handleTextChange, status };
+  return { text, handleTextChange, status };
 }

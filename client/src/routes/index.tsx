@@ -1,3 +1,4 @@
+import "../global-imports";
 import { createFileRoute } from '@tanstack/react-router';
 import { LiveSyncProvider } from "../components/LiveSyncContext";
 import Header from "../components/Header";
@@ -10,10 +11,6 @@ export const Route = createFileRoute('/')({
 function App() {
   return (
     <div>
-      <LiveSyncProvider>
-        <Header />
-        <Editor />
-      </LiveSyncProvider>
       <LiveSyncProvider>
         <Header />
         <Editor />
