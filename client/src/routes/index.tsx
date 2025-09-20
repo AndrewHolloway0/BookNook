@@ -1,4 +1,4 @@
-import "../global-imports";
+import "../global-imports.ts";
 import { createFileRoute } from '@tanstack/react-router';
 import { LiveSyncProvider } from "../components/LiveSyncContext";
 import Header from "../components/Header";
