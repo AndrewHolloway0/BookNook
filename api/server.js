@@ -9,7 +9,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 
-const FILE_PATH = path.join(__dirname, "document.md");
+const FILE_PATH = path.join(__dirname, "example.md");
 
 // Load document from disk if it exists
 let documentText = "";
@@ -25,18 +25,24 @@ function saveDocument(text) {
 io.on("connection", (socket) => {
   console.log("a user connected");
 
+  // Send doc immediately to new client
   socket.emit("load-document", documentText);
+
+  // Let clients re-request doc if they reconnect
+  socket.on("request-document", () => {
+    socket.emit("load-document", documentText);
+  });
 
   socket.on("send-changes", (delta, callback) => {
     documentText = delta;
 
-    // Broadcast changes to other clients immediately
+    // Broadcast changes to others
     socket.broadcast.emit("receive-changes", delta);
 
-    // Mimic slow save
+    // Try to save document
     try {
-      saveDocument(documentText); // your save function
-      callback({ success: true }); // tell frontend save is done
+      saveDocument(documentText);
+      callback({ success: true });
     } catch (err) {
       callback({ success: false, message: "Failed to save document" });
     }
