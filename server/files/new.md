@@ -1,5 +1,3 @@
-# This is was my plan all along...
+# My brand new note
 
-Well.. where to start? Lorem ipsum
-
-lets try this
+I can't wait to start!

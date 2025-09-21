@@ -125,7 +125,7 @@ export default function FileExplorer(props: Props) {
                 e.preventDefault();
                 setContextMenu({ x: e.clientX, y: e.clientY, entry });
               }}
-              className={"flex items-center gap-2 p-1 rounded hover:bg-gray-100 " + (selectedPath === entry.path ? 'bg-blue-100 font-semibold' : '')}
+              className={"flex items-center gap-2 p-1 rounded cursor-pointer hover:bg-gray-100 " + (selectedPath === entry.path ? 'bg-blue-100 font-semibold' : '')}
             >
               {entry.isDirectory ? (
                 <button
