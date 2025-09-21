@@ -5,6 +5,7 @@ import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import { LiveSyncProvider } from "../components/LiveSyncContext";
 import Header from "../components/Header";
 import Editor from "../components/Editor";
+import FileExplorer from "../components/FileExplorer";
 
 export const Route = createFileRoute('/')({
   component: App,
@@ -12,22 +13,23 @@ export const Route = createFileRoute('/')({
 
 function App() {
   const [editing, setEditing] = useState(true); // start in editing mode
+  const [selectedFile, setSelectedFile] = useState<string | null>(null);
 
   const toggleEditing = () => setEditing(prev => !prev);
 
   return (
     <div className="flex flex-row min-h-screen">
-      <div className="shadow bg-gray-100 min-w-40 flex flex-col p-4">
+        <div className="shadow bg-gray-100 min-w-40 flex flex-col p-4">
         <span className="text-2xl font-bold flex items-center gap-2 mb-4">
           <AutoStoriesIcon />
           BookNook
         </span>
-        <nav className="">
-
+        <nav className="flex-1 overflow-auto">
+          <FileExplorer onSelect={(p) => setSelectedFile(p)} selectedPath={selectedFile} />
         </nav>
       </div>
       <div className="flex-1 flex flex-col min-h-0 p-4">
-        <LiveSyncProvider>
+        <LiveSyncProvider filePath={selectedFile}>
           <div className="flex-none">
             <Header editing={editing} onToggle={toggleEditing} />
           </div>
@@ -39,3 +41,5 @@ function App() {
     </div>
   );
 }
+
+// Pass selection handler to FileExplorer by updating its usage in the sidebar
