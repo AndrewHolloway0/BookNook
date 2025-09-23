@@ -127,7 +127,7 @@ export default function FileExplorer(props: Props) {
               }}
               className={"flex items-center gap-2 p-1 rounded cursor-pointer hover:bg-gray-100 " + (selectedPath === entry.path ? 'bg-blue-100 font-semibold' : '')}
             >
-              {entry.isDirectory ? (
+              {/* {entry.isDirectory ? (
                 <button
                   aria-expanded={!!expanded[entry.path]}
                   onClick={() => toggle(entry.path)}
@@ -136,16 +136,14 @@ export default function FileExplorer(props: Props) {
                   {expanded[entry.path] ? '▾' : '▸'}
                 </button>
               ) : (
-                <span className="w-6" />
-              )}
+                <span className="min-w-6" />
+              )} */}
               <span className="select-none">{entry.isDirectory ? '📁' : '📄'}</span>
-              <span className="flex-1 truncate" onClick={() => { if (!entry.isDirectory) onSelect?.(entry.path); }}>{displayNameFor(entry)}</span>
+              <span className="flex-1 truncate" onClick={() => { if (!entry.isDirectory) { if (selectedPath === entry.path) onSelect?.(null as any); else onSelect?.(entry.path); } }}>{displayNameFor(entry)}</span>
             </div>
-            {entry.isDirectory && expanded[entry.path] && (
               <div className="pl-4">
                 {renderEntries(entry.path, level + 1)}
               </div>
-            )}
           </li>
         ))}
       </ul>

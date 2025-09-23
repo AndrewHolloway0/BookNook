@@ -9,18 +9,25 @@ import { useLiveSyncContext } from "./LiveSyncContext";
 type EditorProps = {
   editing: boolean;
   onToggle?: () => void;
+  filePath?: string | null;
 };
 
 export default function Header(props: EditorProps) {
-  const { editing, onToggle } = props;
+  const { editing, onToggle, filePath } = props;
   const { status } = useLiveSyncContext();
+  const fileTitle  = filePath ? filePath.split(/\/|\\/g,).pop()?.replace(/-/g, ' ').replace('.md', '').replace(/\b\w/g, c => c.toUpperCase()) : "";
 
   return (
-    <header className="flex place-content-end items-center gap-2">
-      <span>
-        {EditIndicator(editing, onToggle)}
-      </span>
-      <span>{StatusIndicator(status)}</span>
+    <header className="justify-between flex items-center">
+      <div>
+        <h2 className="text-2xl font-bold">{fileTitle}</h2>
+      </div>
+      <div className="flex items-center gap-4">
+        <span>
+          {EditIndicator(editing, onToggle)}
+        </span>
+        <span>{StatusIndicator(status)}</span>
+      </div>
     </header>
   );
 }
@@ -41,7 +48,7 @@ function StatusIndicator(status: string) {
 }
 
 function EditIndicator(editing: boolean, onToggle?: () => void) {
-  const buttonStyling = "p-1 rounded border-2 border-gray-300 bg-gray-200 text-gray-500 flex items-center gap-1";
+  const buttonStyling = "p-1 rounded border-2 text-gray-500 flex items-center gap-1";
 
   if (editing) {
     return (
@@ -49,9 +56,9 @@ function EditIndicator(editing: boolean, onToggle?: () => void) {
         onClick={onToggle}
         aria-pressed="true"
         title="Toggle editing"
-        className={buttonStyling}
+        className={buttonStyling + " border-gray-200 bg-gray-200"}
       >
-        <EditIcon fontSize="small" />
+        <EditOffIcon fontSize="small" />
       </button>
     );
   }
@@ -61,9 +68,9 @@ function EditIndicator(editing: boolean, onToggle?: () => void) {
       onClick={onToggle}
       aria-pressed="false"
       title="Toggle editing"
-      className={buttonStyling}
+      className={buttonStyling + " border-gray-100 bg-gray-100"}
     >
-      <EditOffIcon fontSize="small" />
+      <EditIcon fontSize="small" />
     </button>
   );
 }

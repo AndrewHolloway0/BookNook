@@ -26,7 +26,17 @@ export const LiveSyncProvider: React.FC<{ children: React.ReactNode, filePath?: 
       saveTimer.current = null;
     }
 
-    // If a filePath is provided, load that file from REST API and operate in file-backed mode
+    // If filePath is explicitly null -> no file selected: clear editor and do not start socket/file mode
+    if (filePath === null) {
+      setText('');
+      localStorage.removeItem('livesync_unsaved_text');
+      unsavedRef.current = false;
+      setStatus('saved');
+      // do nothing else
+      return;
+    }
+
+    // If a filePath is provided (non-empty string), load that file from REST API and operate in file-backed mode
     if (filePath) {
       // Disconnect any socket if present
       if (socketRef.current) {
