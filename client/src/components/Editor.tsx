@@ -19,7 +19,6 @@ export default function Editor(props: EditorProps) {
     case false: return (
       <div className={editorStyling}>
         <ReactMarkdown
-          placeholder={text ? undefined : "No file selected. Please select a file from the left to view its contents, or create a new file."}
           components={{
             h1: ({node, ...rest}) => <h1 className="text-3xl font-bold mt-6 mb-2" {...rest} />,
             h2: ({node, ...rest}) => <h2 className="text-2xl font-bold mt-5 mb-2" {...rest} />,
@@ -28,10 +27,10 @@ export default function Editor(props: EditorProps) {
             h5: ({node, ...rest}) => <h5 className="text-base font-semibold mt-3 mb-1" {...rest} />,
             h6: ({node, ...rest}) => <h6 className="text-sm font-semibold mt-3 mb-1" {...rest} />,
             a: ({node, ...rest}) => (
-              <a {...rest} className={`text-blue-600 underline hover:text-blue-800`} target="_blank" rel="noopener noreferrer" />
+              <a {...rest} className={`text-blue-400 underline hover:text-blue-300`} target="_blank" rel="noopener noreferrer" />
             ),
             code: ({node, ...rest}) => (
-              <code className="bg-gray-100 px-1 rounded text-sm font-mono text-gray-800" {...rest} />
+              <code className="bg-gray-100 px-1 rounded text-sm font-mono text-gray-800 dark:bg-gray-800 dark:text-white" {...rest} />
             ),
             p: ({node, ...rest}) => (
               <p className="my-2" {...rest} />
@@ -39,11 +38,17 @@ export default function Editor(props: EditorProps) {
             hr: ({node, ...rest}) => (
               <hr className="my-4" {...rest} />
             ),
+            ol: ({node, ...rest}) => (
+              <ol className="list-decimal list-inside" {...rest} />
+            ),
             ul: ({node, ...rest}) => (
               <ul className="list-disc list-inside" {...rest} />
             ),
             li: ({node, ...rest}) => (
               <li className="px-4" {...rest} />
+            ),
+            blockquote: ({node, ...rest}) => (
+              <blockquote className="border-l-4 border-gray-300 pl-4 my-2 text-gray-600 dark:border-gray-700 dark:text-gray-400" {...rest} />
             ),
             pre: (codeProps: any) => {
               const { children } = codeProps;
@@ -51,7 +56,7 @@ export default function Editor(props: EditorProps) {
               const codeText = children.props.children;
 
               return (
-                <div className="relative">
+                <div className="relative shadow bg-gray-900 text-gray-100 p-3 rounded overflow-auto my-2 dark:bg-gray-800">
                   <button
                     onClick={async () => {
                       try {
@@ -70,7 +75,7 @@ export default function Editor(props: EditorProps) {
                     className="absolute right-2 top-2 z-5 bg-white text-sm px-2 py-1 rounded shadow border hover:bg-gray-50"
                     aria-label="Copy code"
                   >Copy</button>
-                  <pre className="bg-gray-900 text-gray-100 p-3 rounded overflow-auto my-2" {...codeProps}>
+                  <pre className="" {...codeProps}>
                     <code className="font-mono">
                       {children}
                     </code>

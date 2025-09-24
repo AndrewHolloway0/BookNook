@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react';
 import { io as ioClient } from 'socket.io-client';
-import FolderIcon from '@mui/icons-material/Folder';
-import DescriptionIcon from '@mui/icons-material/Description';
 
 type Props = {
   onSelect?: (path: string) => void;
@@ -17,6 +15,7 @@ type Entry = {
 export default function FileExplorer(props: Props) {
   const { onSelect, selectedPath } = props;
   const [tree, setTree] = useState<Record<string, Array<Entry>>>({});
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; entry: Entry } | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<Entry | null>(null);
 
@@ -51,22 +50,18 @@ export default function FileExplorer(props: Props) {
     return data.entries || [];
   }
 
-  // Ensure the given path is loaded; recursively load all child directories so the tree is always expanded
   async function ensureLoaded(path = '.') {
-    // Avoid re-loading a path that already has entries
     if (Array.isArray(tree[path]) && tree[path].length > 0) return;
-    try {
-      const entries = await load(path);
-      setTree((t) => ({ ...t, [path]: entries }));
-      // Recursively ensure children directories are loaded (permanently expanded)
-      for (const e of entries) {
-        if (e.isDirectory) {
-          await ensureLoaded(e.path);
-        }
-      }
-    } catch (err) {
-      console.warn('Failed to ensure Loaded', path, err);
-    }
+    const entries = await load(path);
+    setTree((t) => ({ ...t, [path]: entries }));
+  }
+
+  function toggle(path: string) {
+    setExpanded((e) => {
+      const is = !e[path];
+      if (is) ensureLoaded(path);
+      return { ...e, [path]: is };
+    });
   }
 
   function basename(p: string) {
@@ -118,9 +113,9 @@ export default function FileExplorer(props: Props) {
   function renderEntries(path = '.', level = 0) {
   const entries = tree[path] ?? [];
     return (
-      <ul role="group">
+      <ul role="group" className="pl-2">
         {entries.map((entry) => (
-          <li key={entry.path}>
+          <li key={entry.path} className="py-1">
             <div
               draggable
               onDragStart={(e) => onDragStart(e, entry)}
@@ -130,14 +125,25 @@ export default function FileExplorer(props: Props) {
                 e.preventDefault();
                 setContextMenu({ x: e.clientX, y: e.clientY, entry });
               }}
-              className={"flex items-center gap-2 p-1 rounded cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 " + (selectedPath === entry.path ? 'bg-blue-100 font-semibold dark:text-gray-900' : '')}
+              className={"flex items-center gap-2 p-1 rounded cursor-pointer hover:bg-gray-100 hover:dark:bg-gray-700 " + (selectedPath === entry.path ? 'bg-blue-100 font-semibold' : '')}
             >
-              <span className="select-none">{entry.isDirectory ? <FolderIcon /> : <DescriptionIcon />}</span>
+              {/* {entry.isDirectory ? (
+                <button
+                  aria-expanded={!!expanded[entry.path]}
+                  onClick={() => toggle(entry.path)}
+                  className="w-6 h-6 flex items-center justify-center"
+                >
+                  {expanded[entry.path] ? '▾' : '▸'}
+                </button>
+              ) : (
+                <span className="min-w-6" />
+              )} */}
+              <span className="select-none">{entry.isDirectory ? '📁' : '📄'}</span>
               <span className="flex-1 truncate" onClick={() => { if (!entry.isDirectory) { if (selectedPath === entry.path) onSelect?.(null as any); else onSelect?.(entry.path); } }}>{displayNameFor(entry)}</span>
             </div>
-            <div className="pl-4 border-l">
-              {renderEntries(entry.path, level + 1)}
-            </div>
+              <div className="pl-4">
+                {renderEntries(entry.path, level + 1)}
+              </div>
           </li>
         ))}
       </ul>
@@ -145,8 +151,8 @@ export default function FileExplorer(props: Props) {
   }
 
   return (
-    <nav className="w-64 p-2 overflow-auto">
-      {/* <div className="mb-2 flex items-center justify-between">
+    <nav className="w-64 p-2 border-r overflow-auto">
+      <div className="mb-2 flex items-center justify-between">
         <div className="font-semibold">Files</div>
         <div className="flex gap-1">
           <button
@@ -175,16 +181,16 @@ export default function FileExplorer(props: Props) {
           >f
           </button>
         </div>
-      </div> */}
+      </div>
       {renderEntries('.')}
       {/* Context menu */}
       {contextMenu && (
         <div
           style={{ left: contextMenu.x, top: contextMenu.y }}
-          className="fixed bg-white border rounded shadow p-1 z-50 dark:bg-gray-800"
+          className="fixed bg-white border rounded shadow p-1 z-50"
         >
           <button
-            className="block px-3 py-1 text-left w-full hover:bg-gray-100 dark:hover:bg-gray-700"
+            className="block px-3 py-1 text-left w-full hover:bg-gray-100 hover:dark:bg-gray-700"
             onClick={async () => {
               // rename: prompt without extension, then send dest with .md appended for files
               const prefill = displayNameFor(contextMenu.entry);
@@ -201,13 +207,13 @@ export default function FileExplorer(props: Props) {
             }}
           >Rename</button>
           <button
-            className="block px-3 py-1 text-left w-full hover:bg-gray-100 dark:hover:bg-gray-700"
+            className="block px-3 py-1 text-left w-full hover:bg-gray-100 hover:dark:bg-gray-700"
             onClick={() => {
               setConfirmDelete(contextMenu.entry);
               setContextMenu(null);
             }}
           >Delete</button>
-          <button className="block px-3 py-1 text-left w-full hover:bg-gray-100 dark:hover:bg-gray-700" onClick={() => setContextMenu(null)}>Cancel</button>
+          <button className="block px-3 py-1 text-left w-full hover:bg-gray-100 hover:dark:bg-gray-700" onClick={() => setContextMenu(null)}>Cancel</button>
         </div>
       )}
 
@@ -215,11 +221,11 @@ export default function FileExplorer(props: Props) {
       {confirmDelete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black opacity-30" onClick={() => setConfirmDelete(null)} />
-          <div className="bg-white p-4 rounded shadow z-10 dark:bg-gray-800">
+          <div className="bg-white p-4 rounded shadow z-10">
             <div className="mb-4">Delete <strong>{displayNameFor(confirmDelete.name)}</strong>?</div>
             <div className="flex gap-2 justify-end">
-              <button className="px-3 py-1 rounded bg-gray-100 dark:bg-gray-700" onClick={() => setConfirmDelete(null)}>Cancel</button>
-              <button className="px-3 py-1 rounded bg-red-600" onClick={async () => {
+              <button className="px-3 py-1 rounded bg-gray-100" onClick={() => setConfirmDelete(null)}>Cancel</button>
+              <button className="px-3 py-1 rounded bg-red-600 text-white" onClick={async () => {
                 const entry = confirmDelete;
                 setConfirmDelete(null);
                 await fetch('http://localhost:4000/api/delete', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ path: entry.path }) });
@@ -231,7 +237,7 @@ export default function FileExplorer(props: Props) {
           </div>
         </div>
       )}
-      {/* <div className="mt-4 text-sm text-gray-500">Tip: drag file onto folder to move. Click folder arrow to expand. Right-click item for rename/delete.</div> */}
+      <div className="mt-4 text-sm text-gray-500">Tip: drag file onto folder to move. Click folder arrow to expand. Right-click item for rename/delete.</div>
     </nav>
   );
 }

@@ -56,7 +56,7 @@ function EditIndicator(editing: boolean, onToggle?: () => void) {
         onClick={onToggle}
         aria-pressed="true"
         title="Toggle editing"
-        className={buttonStyling + " border-gray-200 bg-gray-200"}
+        className={buttonStyling + " border-gray-200 bg-gray-200 dark:text-gray-100 dark:bg-gray-900 dark:border-gray-900"}
       >
         <EditOffIcon fontSize="small" />
       </button>
@@ -68,7 +68,7 @@ function EditIndicator(editing: boolean, onToggle?: () => void) {
       onClick={onToggle}
       aria-pressed="false"
       title="Toggle editing"
-      className={buttonStyling + " border-gray-100 bg-gray-100"}
+      className={buttonStyling + " border-gray-100 bg-gray-100 dark:text-gray-100 dark:text-white dark:bg-gray-700 dark:border-gray-700"}
     >
       <EditIcon fontSize="small" />
     </button>

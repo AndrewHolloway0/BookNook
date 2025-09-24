@@ -24,12 +24,12 @@ function App() {
   const toggleEditing = () => setEditing(prev => !prev);
 
   return (
-    <div className="flex flex-row min-h-screen">
-        <div className="shadow bg-gray-100 min-w-40 items-center flex flex-col p-4">
+    <div className="flex flex-row min-h-screen dark:text-white dark:bg-gray-900">
+      <div className="shadow bg-gray-100 min-w-40 items-center flex flex-col p-4 dark:bg-gray-800">
         <span className="text-2xl font-bold flex items-center gap-2 mb-4">
           <AutoStoriesIcon />
           BookNook
-          {/* <button
+          <button
             className="ml-2 text-sm px-2 py-1 rounded bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
             onClick={() => {
               const next = !darkMode;
@@ -38,7 +38,7 @@ function App() {
               if (next) document.documentElement.classList.add('dark'); else document.documentElement.classList.remove('dark');
             }}
             title="Toggle dark mode"
-          >{darkMode ? '🌙' : '☀️'}</button> */}
+          >{darkMode ? '🌙' : '☀️'}</button>
         </span>
         <nav className="flex-1 overflow-auto">
           <FileExplorer onSelect={(p) => setSelectedFile(p)} selectedPath={selectedFile} />
@@ -46,7 +46,7 @@ function App() {
       </div>
       <div className="flex-1 flex flex-col min-h-0 p-2">
         <LiveSyncProvider filePath={selectedFile}>
-          <div className={selectedFile ? "flex-none sticky top-0 bg-white z-100 py-2 px-4 shadow rounded" : "hidden"}>
+          <div className={selectedFile ? "flex-none sticky top-0 bg-white z-100 py-2 px-4 shadow rounded dark:bg-gray-800" : "hidden"}>
             <Header editing={editing} onToggle={toggleEditing} filePath={selectedFile} />
           </div>
           <div className="flex-1 overflow-auto p-4 w-[83%] mx-auto">
