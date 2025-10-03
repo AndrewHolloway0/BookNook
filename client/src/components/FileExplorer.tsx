@@ -116,7 +116,7 @@ export default function FileExplorer(props: Props) {
   }
 
   function renderEntries(path = '.', level = 0) {
-  const entries = tree[path] ?? [];
+    const entries = tree[path] ?? [];
     return (
       <ul role="group">
         {entries.map((entry) => (
@@ -130,12 +130,13 @@ export default function FileExplorer(props: Props) {
                 e.preventDefault();
                 setContextMenu({ x: e.clientX, y: e.clientY, entry });
               }}
+              onClick={() => { if (!entry.isDirectory) { if (selectedPath === entry.path) onSelect?.(null as any); else onSelect?.(entry.path); } }}
               className={"flex items-center gap-2 p-1 rounded cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 " + (selectedPath === entry.path ? 'bg-blue-100 font-semibold dark:text-gray-900' : '')}
             >
               <span className="select-none">{entry.isDirectory ? <FolderIcon /> : <DescriptionIcon />}</span>
-              <span className="flex-1 truncate" onClick={() => { if (!entry.isDirectory) { if (selectedPath === entry.path) onSelect?.(null as any); else onSelect?.(entry.path); } }}>{displayNameFor(entry)}</span>
+              <span className="flex-1 truncate">{displayNameFor(entry)}</span>
             </div>
-            <div className="pl-4 border-l">
+            <div className="pl-3 border-l">
               {renderEntries(entry.path, level + 1)}
             </div>
           </li>
@@ -146,36 +147,6 @@ export default function FileExplorer(props: Props) {
 
   return (
     <nav className="w-64 p-2 overflow-auto">
-      {/* <div className="mb-2 flex items-center justify-between">
-        <div className="font-semibold">Files</div>
-        <div className="flex gap-1">
-          <button
-            onClick={async () => {
-              const name = prompt('New folder name');
-              if (!name) return;
-              await fetch('http://localhost:4000/api/create', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ path: name, type: 'folder' }) });
-              await ensureLoaded('.');
-            }}
-            className="text-sm px-2 py-1 rounded bg-gray-100"
-            title="Create folder"
-          >+
-          </button>
-          <button
-            onClick={async () => {
-              let name = prompt('New file name (without .md)');
-              if (!name) return;
-              // strip trailing .md if user included it
-              if (name.toLowerCase().endsWith('.md')) name = name.slice(0, -3);
-              const path = name + '.md';
-              await fetch('http://localhost:4000/api/create', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ path, type: 'file', content: '' }) });
-              await ensureLoaded('.');
-            }}
-            className="text-sm px-2 py-1 rounded bg-gray-100"
-            title="Create file"
-          >f
-          </button>
-        </div>
-      </div> */}
       {renderEntries('.')}
       {/* Context menu */}
       {contextMenu && (
